@@ -22,6 +22,7 @@ class ElasticSearchService
 
     public function indexContact($contact)
     {
+        // dd($contact);
         return $this->client->index([
             'index' => 'contacts',
             'id' => $contact['id'],

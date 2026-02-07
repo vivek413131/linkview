@@ -13,6 +13,7 @@ Route::prefix('v1.0')->group(function () {
     Route::middleware('jwt.auth')->group(function () {
          Route::post('logout', [AuthController::class, 'logout']);
         Route::post('contacts/upload', [ContactController::class, 'upload']);
+        Route::get('contacts', [ContactController::class, 'getContacts']);
         Route::post('search-number', [SerachController::class, 'searchNumber']);
     });
 });

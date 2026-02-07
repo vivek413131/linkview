@@ -15,7 +15,7 @@ class Contact extends Model
     {
         return $this->belongsToMany(
             Contact::class,
-            'contact_relations',  // agar relation table bana hai
+            'contact_relations',  
             'contact_id',
             'related_contact_id'
         );
