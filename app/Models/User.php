@@ -71,4 +71,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(AboutProfile::class, 'user_id', 'id');
     }
+
+    public function getProfilePicUrlAttribute()
+    {
+        if (!$this->profile_pic) {
+            return null;
+        }
+
+        return asset('storage/profile/' . $this->profile_pic);
+    }
 }
