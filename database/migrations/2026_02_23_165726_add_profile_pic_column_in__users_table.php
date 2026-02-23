@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('profile_pic');
-            $table->boolean('is_buisness');
-            $table->boolean('is_govt');
-            $table->boolean('designation_id');
+            $table->string('profile_pic')->nullable();
+            $table->boolean('is_buisness')->default(false);
+            $table->boolean('is_govt')->default(false);
+            $table->boolean('designation_id')->nullable();
         });
 
         Schema::create('designations', function (Blueprint $table) {
