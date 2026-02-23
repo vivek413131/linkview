@@ -61,4 +61,14 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    public function designation()
+    {
+        return $this->belongsTo(Designation::class, 'designation_id', 'id');
+    }
+
+    public function about()
+    {
+        return $this->hasOne(AboutProfile::class, 'user_id', 'id');
+    }
 }

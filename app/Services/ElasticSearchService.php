@@ -20,11 +20,10 @@ class ElasticSearchService
         $relations      = [];
         $processedNodes = 0;
 
-        /** 🔹 START = my contacts only */
         $startNumbers = Contact::where('user_id', $me)
             ->pluck('normalized_mobile')
             ->unique()
-            ->take(300)              // 🔥 LIMIT
+            ->take(300)             
             ->toArray();
 
         foreach ($startNumbers as $num) {
@@ -34,7 +33,7 @@ class ElasticSearchService
         while (!empty($queue)) {
 
             if ($processedNodes >= self::MAX_NODES) {
-                break; // 🛑 safety stop
+                break; 
             }
 
             $node = array_shift($queue);
@@ -48,21 +47,21 @@ class ElasticSearchService
 
             $visitedNumbers[$num] = true;
 
-            /** 🎯 FOUND TARGET */
+            
             if ($num === $target) {
                 $relations[] = [
                     'mobile' => $target,
                     'depth'  => $depth,
                     'type'   => $this->relationType($depth)
                 ];
-                break; // ✅ STOP BFS
+                break; 
             }
 
-            /** 🔹 batch: users having this number */
+            
             $userIds = Contact::where('normalized_mobile', $num)
                 ->pluck('user_id')
                 ->unique()
-                ->take(50) // 🔥 LIMIT
+                ->take(50) 
                 ->toArray();
 
             foreach ($userIds as $userId) {
@@ -70,10 +69,10 @@ class ElasticSearchService
                 if (isset($visitedUsers[$userId])) continue;
                 $visitedUsers[$userId] = true;
 
-                /** 🔹 get THEIR contacts (limited) */
+                
                 $nextNumbers = Contact::where('user_id', $userId)
                     ->pluck('normalized_mobile')
-                    ->take(50) // 🔥 LIMIT
+                    ->take(50) 
                     ->toArray();
 
                 foreach ($nextNumbers as $next) {
