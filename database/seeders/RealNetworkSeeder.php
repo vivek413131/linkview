@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-class RealNetworkWithCallsSeeder extends Seeder
+class RealNetworkSeeder extends Seeder
 {
     public function run(): void
     {
