@@ -8,6 +8,8 @@ use App\Models\Contact;
 use App\Services\ElasticSearchService;
 use Illuminate\Support\Facades\Auth;
 use App\Helpers\ApiResponse;
+use App\Models\CallLog;
+use App\Models\CallLogStat;
 
 class ContactController extends Controller
 {
@@ -144,6 +146,40 @@ class ContactController extends Controller
         } catch (\Exception $e) {
 
             // dd($e->getMessage());
+            return ApiResponse::error($e->getMessage(), 500);
+        }
+    }
+
+
+    public function uploadCallLog(Request $request)
+    {
+        try {
+
+            $request->validate([
+                'logs' => 'required|array|min:1',
+                'logs.*.mobile' => 'required|string|min:10',
+                'logs.*.type' => 'required|in:incoming,outgoing,missed',
+                'logs.*.duration' => 'nullable|integer'
+            ]);
+
+            $user = Auth::user();
+
+            foreach ($request->logs as $log) {
+
+                $this->es->storeCallLog(
+                    $user->id,
+                    $log['mobile'],
+                    $log['type'],
+                    $log['duration'] ?? null
+                );
+            }
+
+            return ApiResponse::success(
+                [],
+                'Call logs stored successfully'
+            );
+        } catch (\Throwable $e) {
+
             return ApiResponse::error($e->getMessage(), 500);
         }
     }

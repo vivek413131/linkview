@@ -22,6 +22,9 @@ Route::prefix('v1.0')->group(function () {
         Route::get('get-designation', [UserController::class, 'getDesignation']);
         Route::get('get-profile', [UserController::class, 'getProfile']);
 
+        Route::post('/call-logs/upload', [ContactController::class, 'uploadCallLog'])
+            ->name('call-logs.upload');
+
         // Route::post
     });
 });

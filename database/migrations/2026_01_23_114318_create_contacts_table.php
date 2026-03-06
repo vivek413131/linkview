@@ -17,7 +17,8 @@ return new class extends Migration
             $table->string('contact_mobile');
             $table->string('contact_name')->nullable();
             $table->string('normalized_mobile')->index();
-            $table->unique(['user_id', 'contact_mobile']);
+            // $table->unique(['user_id', 'contact_mobile']);
+            $table->unique(['user_id', 'normalized_mobile']);
             $table->timestamps();
             $table->softDeletes();
         });
