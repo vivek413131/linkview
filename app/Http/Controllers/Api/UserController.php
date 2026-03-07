@@ -113,7 +113,7 @@ class UserController extends Controller
                 'email'       => 'sometimes|email|unique:users,email,' . $userId,
                 'lat'         => 'sometimes|numeric',
                 'long'        => 'sometimes|numeric',
-                'profile_pic' => 'sometimes|image|mimes:jpg,jpeg,png,webp|max:2048',
+                'profile_pic' => 'sometimes|image|mimes:jpg,jpeg,png,webp',
             ]);
 
             $user = User::findOrFail($userId);
