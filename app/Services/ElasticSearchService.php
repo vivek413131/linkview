@@ -93,7 +93,8 @@ class ElasticSearchService
 
     public function searchLocal(string $targetNumber): array
     {
-        $target = preg_replace('/\D/', '', $targetNumber);
+        // $target = preg_replace('/\D/', '', $targetNumber);
+        $target = $this->normalizeNumber($targetNumber);
 
         $relation = $this->bfsSearch($target);
 
@@ -102,10 +103,16 @@ class ElasticSearchService
         }
 
         $callCount = \DB::table('call_log_stats')
-            ->where('normalized_mobile', $target)
+            ->whereRaw('RIGHT(normalized_mobile,10) = ?', [$target])
             ->sum('total_calls');
 
-        $contactCount = Contact::where('normalized_mobile', $target)->count();
+        $contactCount = Contact::whereRaw('RIGHT(normalized_mobile,10) = ?', [$target])->count();
+
+        // $callCount = \DB::table('call_log_stats')
+        //     ->where('normalized_mobile', $target)
+        //     ->sum('total_calls');
+
+        // $contactCount = Contact::where('normalized_mobile', $target)->count();
 
         $score = $this->calculateScore(
             $relation['depth'],
@@ -183,16 +190,25 @@ class ElasticSearchService
             $visitedNumbers[$num] = true;
 
 
-            if ($num === $target) {
+            // if ($num === $target) 
+            if (substr($num, -10) === $target) {
                 return [
                     'mobile' => $target,
                     'depth' => $depth,
                     'type' => $this->relationType($depth)
                 ];
             }
+            // Contact::whereRaw('RIGHT(normalized_mobile,10) = ?', [substr($num, -10)])
 
+            // $userIds = Contact::where('normalized_mobile', $num)
+            // $userIds =
+            //     Contact::whereRaw('RIGHT(normalized_mobile,10) = ?', [substr($num, -10)])
+            //     ->pluck('user_id')
+            //     ->unique()
+            //     ->take(50)
+            //     ->toArray();
 
-            $userIds = Contact::where('normalized_mobile', $num)
+            $userIds = Contact::whereRaw('RIGHT(normalized_mobile,10) = ?', [substr($num, -10)])
                 ->pluck('user_id')
                 ->unique()
                 ->take(50)
@@ -225,10 +241,21 @@ class ElasticSearchService
     }
 
 
+    private function normalizeNumber(string $number): string
+    {
+        $number = preg_replace('/\D/', '', $number);
+        if (strlen($number) > 10) {
+            $number = substr($number, -10);
+        }
+
+        return $number;
+    }
+
     // call logs
     public function storeCallLog($userId, $mobile, $type, $duration = null)
     {
-        $normalized = preg_replace('/\D/', '', $mobile);
+        // $normalized = preg_replace('/\D/', '', $mobile);
+        $normalized = substr(preg_replace('/\D/', '', $mobile), -10);
 
         CallLog::create([
             'user_id' => $userId,
